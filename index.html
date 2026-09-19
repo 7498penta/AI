@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mini Local AI</title>
+<style>
+:root{--bg:#f4f6f8;--panel:#fff;--text:#17212b;--muted:#667587;--border:#dce3ea;--accent:#2563eb;--user:#e8f0ff;--dark:#111827}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text)}button,input,textarea,select{font:inherit}.app{max-width:1250px;margin:auto;min-height:100vh;display:grid;grid-template-columns:290px 1fr}.side{background:var(--dark);color:#fff;padding:16px;min-height:100vh;position:sticky;top:0;height:100vh;overflow:auto}.brand{font-size:20px;font-weight:800;margin-bottom:10px}.small{font-size:11px;color:#cbd5e1;line-height:1.5}.box{background:#0f172a;border:1px solid #374151;border-radius:10px;padding:10px;margin:10px 0}.side button,.side select,.side textarea{width:100%;margin:5px 0}.side button{background:#1f2937;color:#fff;border:1px solid #374151;border-radius:9px;padding:9px;text-align:left}.side select,.side textarea{background:#0f172a;color:#fff;border:1px solid #374151;border-radius:8px;padding:8px}.side textarea{min-height:260px;line-height:1.5;resize:vertical}.progress{height:8px;background:#263348;border-radius:999px;overflow:hidden;margin-top:6px}.bar{height:100%;width:0;background:#60a5fa}.main{min-width:0;display:flex;flex-direction:column;min-height:100vh}.top{background:#fff;border-bottom:1px solid var(--border);padding:17px 20px;position:sticky;top:0;z-index:2}.title{font-size:22px;font-weight:800}.subtitle{font-size:12px;color:var(--muted);margin-top:3px}.badges{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}.badge{font-size:11px;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3}.chat{flex:1;padding:22px;overflow:auto}.empty{text-align:center;color:var(--muted);padding:80px 20px}.msg{max-width:880px;margin:0 auto 15px;display:flex;gap:9px;align-items:flex-start}.msg.user{justify-content:flex-end}.avatar{width:31px;height:31px;flex:0 0 31px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:#111827;color:#fff}.user .avatar{background:#2563eb;order:2}.bubble{max-width:calc(100% - 40px);border:1px solid var(--border);background:#fff;border-radius:14px;padding:12px 15px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}.user .bubble{background:var(--user);border-color:#c7d7ff}.meta{font-size:10px;color:var(--muted);margin-top:4px}.actions{margin-top:5px}.action{font-size:11px;border:1px solid var(--border);background:#fff;border-radius:7px;padding:4px 7px}.compose{border-top:1px solid var(--border);background:#fff;padding:12px 15px;position:sticky;bottom:0}.compose-in{max-width:880px;margin:auto}.row{display:flex;gap:8px}.row textarea{flex:1;min-height:56px;max-height:180px;resize:vertical;border:1px solid #cdd5df;border-radius:11px;padding:11px;outline:none}.send{min-width:90px;border:0;border-radius:11px;background:#2563eb;color:#fff;font-weight:800}.send:disabled{opacity:.6}.tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.tool{font-size:11px;border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 9px}.hidden{display:none!important}@media(max-width:850px){.app{grid-template-columns:1fr}.side{display:none}.chat{padding:12px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand">Mini Local AI</div>
+  <div class="small" id="status">ブラウザ内で動作中</div>
+  <div class="box">
+    <div class="small"><b>実行:</b> <span id="runtime">確認中</span></div>
+    <div class="small"><b>LLM:</b> <span id="llm">未起動</span></div>
+    <div class="small" id="progText">待機中</div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+  </div>
+  <button id="newChat">＋ 新しい会話</button>
+  <button id="saveChat">会話を保存(JSON)</button>
+  <button id="loadChat">会話を読み込む</button>
+  <button id="addDocs">📚 文書を追加</button>
+  <button id="clearDocs">文書データを消去</button>
+  <button id="clearChat">会話を消去</button>
+  <label class="small" for="engine">回答エンジン</label>
+  <select id="engine"><option value="auto">自動（LLM→RAG→ルール）</option><option value="local">ローカルLLM</option><option value="rag">RAG・ルール</option></select>
+  <button id="prepare">ローカルLLMを準備</button>
+  <label class="small" for="training">学習データ</label>
+  <textarea id="training">こんにちは
+こんにちは。今日はどうしましたか？
+
+元気ですか
+はい。正常に動作しています。
+
+名前は何ですか
+私はブラウザ内で動作する小型AIです。
+
+何ができますか
+質問への回答、計算、学習データ検索、文書検索、会話の保存などができます。
+
+ローカルAIとは何ですか
+自分のコンピューター上でAI処理を行う仕組みです。
+
+人工知能とは何ですか
+人工知能は、コンピューターに知的な処理をさせる技術です。
+
+Pythonとは何ですか
+Pythonは、読みやすく使いやすいプログラミング言語です。
+
+ありがとう
+どういたしまして。
+
+日本の首都はどこですか
+日本の首都は東京です。</textarea>
+  <button id="saveTraining">学習データを保存</button>
+  <div class="small">Q&Aは2行1組。TXT / MD / JSON / CSVの簡易文書登録にも対応します。</div>
+</aside>
+<main class="main">
+<header class="top"><div class="title">自作AIチャット</div><div class="subtitle">小型LLM + RAG + ルール + 記憶</div><div class="badges"><span class="badge" id="qa">Q&A 0</span><span class="badge" id="docs">文書 0</span><span class="badge" id="mem">記憶 0</span></div></header>
+<section class="chat" id="chat"><div class="empty">質問を入力してください。<br>例：「AIとは？」「123×456を計算して」「Pythonとは？」</div></section>
+<footer class="compose"><div class="compose-in"><div class="row"><textarea id="input" placeholder="質問を入力…（Enterで送信 / Shift+Enterで改行）"></textarea><button class="send" id="send">送信</button></div><div class="tools"><button class="tool" data-q="今何時？">時刻</button><button class="tool" data-q="今日は何日？">日付</button><button class="tool" data-q="計算して 123 * 456">計算</button><button class="tool" data-q="こんにちは">挨拶</button><button class="tool" id="web">🔎 Web検索</button><button class="tool" id="voice">🎤 音声入力</button></div></div></footer>
+</main></div>
+<input class="hidden" id="chatFile" type="file" accept="application/json"><input class="hidden" id="docFiles" type="file" accept=".txt,.md,.markdown,.json,.csv" multiple>
+<script>
+(()=>{'use strict';
+const K={h:'mini_ai_history_v2',m:'mini_ai_memory_v2',d:'mini_ai_docs_v2',t:'mini_ai_training_v2',s:'mini_ai_settings_v2'};
+const MODEL='onnx-community/Qwen2.5-0.5B-Instruct';
+const S={history:JSON.parse(localStorage.getItem(K.h)||'[]'),memory:JSON.parse(localStorage.getItem(K.m)||'{"facts":{}}'),docs:JSON.parse(localStorage.getItem(K.d)||'[]'),settings:Object.assign({engine:'auto'},JSON.parse(localStorage.getItem(K.s)||'{}')),pipe:null,tf:null,loading:false,busy:false};
+const $=id=>document.getElementById(id), norm=s=>String(s||'').normalize('NFKC').toLowerCase().replace(/[\s、。！？!?.,，．]/g,''), esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toks=s=>[...new Set((norm(s).match(/[a-z0-9]+|[ぁ-んァ-ヶー一-龯]{2,}/gi)||[]))];
+function saveAll(){localStorage.setItem(K.h,JSON.stringify(S.history));localStorage.setItem(K.m,JSON.stringify(S.memory));localStorage.setItem(K.d,JSON.stringify(S.docs));localStorage.setItem(K.s,JSON.stringify(S.settings));localStorage.setItem(K.t,$('training').value);updateCounts()}
+const qaList=()=>{const l=$('training').value.split(/\n/).map(x=>x.trim()).filter(Boolean),a=[];for(let i=0;i+1<l.length;i+=2)a.push({q:l[i],a:l[i+1]});return a};
+function lexical(q){const qt=new Set(toks(q));return qaList().map(x=>{let c=0;const t=new Set(toks(x.q));qt.forEach(v=>{if(t.has(v))c++});const n=norm(q),nq=norm(x.q);return {...x,score:n===nq?100:(nq.includes(n)||n.includes(nq)?85:c*10)}}).sort((a,b)=>b.score-a.score)[0]||null}
+function calc(s){const m=s.match(/(?:計算して|計算は|計算)?\s*([0-9][0-9\s,]*(?:[+\-×÷*/%^()][0-9\s,]*)+)/);if(!m)return null;const x=m[1].replace(/[\s,]/g,'').replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/\^/g,'**');if(!/^[0-9()+\-*/%.]+$/.test(x)||x.length>90)return null;try{const r=Function('"use strict";return('+x+')')();return Number.isFinite(r)?r:null}catch{return null}}
+function direct(q){if(/^(こんにちは|こんばんは|おはよう)/.test(q))return'こんにちは。質問を入力してください。';if(/^ありがとう|助かった/.test(q))return'どういたしまして。';if(/(今何時|現在時刻|何時)/.test(q))return'現在時刻は '+new Date().toLocaleString('ja-JP',{dateStyle:'full',timeStyle:'short'})+' です。';if(/(今日は何日|今日の日付|何曜日)/.test(q))return'今日は '+new Date().toLocaleDateString('ja-JP',{dateStyle:'full'})+' です。';const c=calc(q);if(c!==null)return'計算結果：'+c;const a=q.match(/^覚えて[:：]\s*(.+?)\s*[=＝]\s*(.+)$/);if(a){S.memory.facts=S.memory.facts||{};S.memory.facts[a[1].trim()]=a[2].trim();saveAll();return'覚えました。';}if(/(記憶|覚えた).*(何|ある)/.test(q)){const f=Object.entries(S.memory.facts||{});return f.length?'現在の記憶：\n'+f.map(([k,v])=>k+' = '+v).join('\n'):'保存された記憶はありません。'}return null}
+function docsSearch(q){const qt=new Set(toks(q));return S.docs.map(d=>{let c=0;const t=new Set(toks(d.text));qt.forEach(v=>{if(t.has(v))c++});return {...d,score:c}}).sort((a,b)=>b.score-a.score).slice(0,4).filter(x=>x.score>0)}
+function rag(q){const r=lexical(q),d=docsSearch(q),parts=[];if(r&&r.score>=10)parts.push('【学習データ】\n'+r.a);d.forEach(x=>parts.push('【'+x.name+'】\n'+x.text.slice(0,700)));return parts.length?'関連する情報を整理すると、次の内容があります。\n\n'+parts.join('\n\n'):null}
+function progress(text,p){$('progText').textContent=text;$('status').textContent=text;if(typeof p==='number')$('bar').style.width=Math.max(0,Math.min(100,p))+'%'}
+function updateCounts(){$('qa').textContent='Q&A '+qaList().length;$('docs').textContent='文書 '+S.docs.length;$('mem').textContent='記憶 '+Object.keys(S.memory.facts||{}).length}
+function render(){const c=$('chat');if(!S.history.length){c.innerHTML='<div class="empty">質問を入力してください。<br>例：「AIとは？」「123×456を計算して」「Pythonとは？」</div>';return}c.innerHTML=S.history.map((m,i)=>{const u=m.role==='user';const tm=new Date(m.time||Date.now()).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});return '<div class="msg '+(u?'user':'ai')+'"><div class="avatar">'+(u?'U':'AI')+'</div><div><div class="bubble">'+esc(m.text)+'</div><div class="meta">'+esc(tm+' / '+(m.meta||''))+'</div>'+(u?'':'<div class="actions"><button class="action" data-copy="'+i+'">コピー</button></div>')+'</div></div>'}).join('');c.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>navigator.clipboard?.writeText(S.history[+b.dataset.copy].text));c.scrollTop=c.scrollHeight}
+function push(role,text,meta){S.history.push({role,text,meta:meta||'',time:Date.now()});saveAll();render()}
+function ctx(q){const r=lexical(q),d=docsSearch(q).slice(0,3),f=Object.entries(S.memory.facts||{}),a=[];if(r)a.push('学習データ: '+r.q+' => '+r.a);d.forEach(x=>a.push('文書: '+x.name+' => '+x.text.slice(0,700)));if(f.length)a.push('記憶: '+f.map(([k,v])=>k+'='+v).join('、'));return a.join('\n')}
+async function ensureTF(){if(S.tf)return S.tf;if(location.protocol==='file:')throw new Error('file://ではLLM用の外部ES Moduleを読み込めません。RAG・ルール機能は利用できます。LLMを使う場合はHTTP/HTTPSで開いてください。');progress('Transformers.jsを読み込み中…');S.tf=await import('https://esm.run/@huggingface/transformers@4.3.0');S.tf.env.useBrowserCache=true;S.tf.env.allowRemoteModels=true;return S.tf}
+async function ensureLLM(){if(S.pipe)return S.pipe;if(S.loading)throw new Error('LLMは読み込み中です。');S.loading=true;$('llm').textContent='読み込み中';try{const t=await ensureTF();progress('Qwen2.5-0.5B-Instructをダウンロード中…',0);S.pipe=await t.pipeline('text-generation',MODEL,{device:'wasm',dtype:'q4',progress_callback:p=>{if(p&&typeof p.progress==='number')progress('LLM '+Math.round(p.progress*100)+'% '+(p.file||''),p.progress*100)}});$('llm').textContent='準備完了';progress('LLM準備完了',100);return S.pipe}catch(e){S.pipe=null;$('llm').textContent='未起動';progress('LLM読み込み失敗: '+(e.message||e));throw e}finally{S.loading=false}}
+async function llmAnswer(q){const pipe=await ensureLLM();const reference=ctx(q);const msgs=[{role:'system',content:'あなたは日本語の小型AIです。簡潔に答えてください。不明なことは不明と述べてください。'+(reference?'\n参考情報:\n'+reference:'')},{role:'user',content:q}];const o=await pipe(msgs,{max_new_tokens:192,do_sample:false,temperature:.2});const x=Array.isArray(o)?o[0]:o;let t=x?.generated_text??x?.text??'';if(Array.isArray(t)){const z=t[t.length-1];t=typeof z==='string'?z:(z?.content||'')}return String(t||'').trim()||'LLMから回答が返りませんでした。'}
+async function answer(q){const d=direct(q);if(d)return{text:d,meta:'ルール/ツール'};if(S.settings.engine!=='rag'){try{return{text:await llmAnswer(q),meta:'Qwen2.5-0.5B / WASM CPU'}}catch(e){if(S.settings.engine==='local')throw e}}const r=rag(q);return r?{text:r,meta:'RAG・学習データ'}:{text:'関連する知識が見つかりませんでした。学習データまたは文書を追加してください。',meta:'フォールバック'}}
+async function send(){if(S.busy)return;const q=$('input').value.trim();if(!q)return;S.busy=true;$('send').disabled=true;$('send').textContent='処理中';$('input').value='';push('user',q);try{progress('回答を作成中…');const r=await answer(q);push('assistant',r.text,r.meta)}catch(e){push('assistant','処理に失敗しました。\n'+(e.message||e),'エラー')}finally{S.busy=false;$('send').disabled=false;$('send').textContent='送信';if(!S.pipe)progress('ブラウザ内で動作中')}}
+$('send').onclick=send;$('input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{$('input').value=b.dataset.q;$('input').focus()});$('engine').value=S.settings.engine;$('engine').onchange=e=>{S.settings.engine=e.target.value;saveAll()};$('prepare').onclick=async()=>{try{await ensureLLM()}catch{}};$('newChat').onclick=()=>{S.history=[];saveAll();render()};$('clearChat').onclick=()=>{if(confirm('会話履歴を消去しますか？')){S.history=[];saveAll();render()}};$('saveTraining').onclick=()=>{saveAll();progress('学習データを保存しました')};$('saveChat').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({training:$('training').value,history:S.history,memory:S.memory,docs:S.docs,settings:S.settings},null,2)],{type:'application/json'}));a.download='mini-local-ai.json';a.click()};$('loadChat').onclick=()=>$('chatFile').click();$('chatFile').onchange=async e=>{try{const d=JSON.parse(await e.target.files[0].text());if(d.training)$('training').value=d.training;if(Array.isArray(d.history))S.history=d.history;if(d.memory)S.memory=d.memory;if(Array.isArray(d.docs))S.docs=d.docs;if(d.settings)S.settings=Object.assign(S.settings,d.settings);$('engine').value=S.settings.engine;saveAll();render()}catch{alert('JSONの読み込みに失敗しました')}};$('addDocs').onclick=()=>$('docFiles').click();$('docFiles').onchange=async e=>{for(const f of [...e.target.files]){const tx=await f.text();const chunks=tx.match(/[\s\S]{1,1200}/g)||[];chunks.forEach(t=>S.docs.push({name:f.name,text:t}))}saveAll();progress('文書を登録しました');e.target.value=''};$('clearDocs').onclick=()=>{if(confirm('文書データをすべて消去しますか？')){S.docs=[];saveAll()}};$('web').onclick=()=>{const q=$('input').value.trim()||S.history.filter(x=>x.role==='user').at(-1)?.text;if(q)window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank','noopener')};$('voice').onclick=()=>{const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return alert('このブラウザは音声入力に対応していません。');const r=new R();r.lang='ja-JP';r.onresult=e=>$('input').value=e.results[0][0].transcript;r.start()};
+$('runtime').textContent=location.protocol==='file:'?'直接起動（RAG/ルール）':'HTTP/HTTPS（LLM対応）';updateCounts();render();
+})();
+</script>
+</body></html>
